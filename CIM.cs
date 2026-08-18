@@ -11,8 +11,8 @@ public bool IsPPSelectMonitorRunning => (m_PPSelectMonitorTask != null && m_PPSe
 
 public void StartPPSelectMonitor()
 {
-	// 用來防手濺 一直案
-	if (Interlocked.CompareExchange(ref m_MonitorState, 1, 0) != false) //(目標變數,新值,比較值)，合併成單一cpu指令，若變數跟比較值相等才會換成新值，回傳成功或失敗
+    // 用來防手賤 一直按
+    if (Interlocked.CompareExchange(ref m_MonitorState, 1, 0) != false) //(目標變數,新值,比較值)，合併成單一cpu指令，若變數跟比較值相等才會換成新值，回傳成功或失敗
     {
 		return;
 	}
@@ -39,8 +39,8 @@ public void StartPPSelectMonitor()
 
 public async void StopPPSelectMonitorAsync()
 {
-	// 用來防手濺 一直案
-	if (Interlocked.CompareExchange(ref m_MonitorState, 0, 1) != 1)
+    // 用來防手賤 一直按
+    if (Interlocked.CompareExchange(ref m_MonitorState, 0, 1) != 1)
 	{
 		return;
 	}
@@ -83,8 +83,8 @@ private async Task PPSelectMonitor(CancellationToken token)
 
 	try
 	{
-		while (token.IsCancellationRequested == false)
-		{
+		while (token.IsCancellationRequested == false) //IsCancellationRequested:檢查是否有取消
+        {
 			if (TryGetPPSelectRequestFromCIM(out var targetRecipe) == true)
 			{
 				lock (m_PPSelectLock)
@@ -97,7 +97,7 @@ private async Task PPSelectMonitor(CancellationToken token)
 				FVLog.Log($"--- Get PPSelect Request RecipeID={targetRecipe} Request from CIM successfully ---");
 			}
 
-			await Task.Delay(100, token);
+			await Task.Delay(100, token); //收到token立即取消，不等delay時間跑完才取消
 		}
 	}
 	catch (Exception ex)
@@ -121,9 +121,9 @@ private bool TryGetPPSelectRequestFromCIM(out string targetRecipe)
 		return false;
 	}
 
-	if (GetDataByPLC(EQMEM_PPSelectRequest_Index, bRead: true) == false)
+	if (GetDataByPLC(EQMEM_PPSelectRequest_Index, bRead: true) == false) //根據Cim提供的位子去PLC撈資料
 	{
-		FVLog.Log($"Error: Failed to read PPSelect Request Index from PLC (D{EQMEM_PPSelectRequest_Index.PosData}).");
+		FVLog.Log($"Error: Failed to read PPSelect Request Index from PLC ({EQMEM_PPSelectRequest_Index.PosData}).");
 		return false;
 	}
 
@@ -132,7 +132,7 @@ private bool TryGetPPSelectRequestFromCIM(out string targetRecipe)
 	// 外面再拿的時候 不確定會不會 race 加一下 視情況拿掉 
 	lock (m_PPSelectLock)
 	{
-		if (currentPPSelectIndex == m_LastPPSelectIndex)
+		if (currentPPSelectIndex == m_LastPPSelectIndex) 
 		{
 			return false; // 直接下一輪了吧
 		}
@@ -140,7 +140,7 @@ private bool TryGetPPSelectRequestFromCIM(out string targetRecipe)
 
 	if (GetDataByPLC(EQMEM_PPSelectRequest, bRead: true) == false)
 	{
-		FVLog.Log($"Error: Failed to read PPSelect Request from PLC (D{EQMEM_PPSelectRequest.PosData}).");
+		FVLog.Log($"Error: Failed to read PPSelect Request from PLC ({EQMEM_PPSelectRequest.PosData}).");
 		return false;
 	}
 
@@ -190,7 +190,6 @@ public bool TryGetPPSelectRecipe(out string targetRecipe, out DateTime recipeTim
 
 		targetRecipe = m_TargetRecipe;
 		recipeTime   = m_LastRecipeReceivedTime;
-
 		m_HasNewRecipe = false;
 
 		return true;
