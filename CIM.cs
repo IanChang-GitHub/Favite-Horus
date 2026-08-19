@@ -12,7 +12,7 @@ public bool IsPPSelectMonitorRunning => (m_PPSelectMonitorTask != null && m_PPSe
 public void StartPPSelectMonitor()
 {
     // 用來防手賤 一直按
-    if (Interlocked.CompareExchange(ref m_MonitorState, 1, 0) != false) //(目標變數,新值,比較值)，合併成單一cpu指令，若變數跟比較值相等才會換成新值，回傳成功或失敗
+    if (Interlocked.CompareExchange(ref m_MonitorState, 1, 0) != 0) //(目標變數,新值,比較值)，合併成單一cpu指令，若變數跟比較值相等才會換成新值，交換成功會回傳舊值
     {
 		return;
 	}
@@ -26,7 +26,7 @@ public void StartPPSelectMonitor()
 	try
 	{
 		m_PPSelectMonitorCts = new CancellationTokenSource(); //取消執行緒的遙控器
-		m_PPSelectMonitorTask = TaskEx.Run(() => PPSelectMonitor(m_PPSelectMonitorCts.Token), m_PPSelectMonitorCts.Token);
+		m_PPSelectMonitorTask = Task.Run(() => PPSelectMonitor(m_PPSelectMonitorCts.Token), m_PPSelectMonitorCts.Token);
 	}
 	catch (Exception ex)
 	{
