@@ -123,7 +123,7 @@ private bool TryGetPPSelectRequestFromCIM(out string targetRecipe)
 
 	if (GetDataByPLC(EQMEM_PPSelectRequest_Index, bRead: true) == false) //根據Cim提供的位子去PLC撈資料
 	{
-		FVLog.Log($"Error: Failed to read PPSelect Request Index from PLC ({EQMEM_PPSelectRequest_Index.PosData}).");
+		FVLog.Log($"Error: Failed to read PPSelect Request Index from PLC (D{EQMEM_PPSelectRequest_Index.PosData}).");
 		return false;
 	}
 
@@ -140,7 +140,7 @@ private bool TryGetPPSelectRequestFromCIM(out string targetRecipe)
 
 	if (GetDataByPLC(EQMEM_PPSelectRequest, bRead: true) == false)
 	{
-		FVLog.Log($"Error: Failed to read PPSelect Request from PLC ({EQMEM_PPSelectRequest.PosData}).");
+		FVLog.Log($"Error: Failed to read PPSelect Request from PLC (D{EQMEM_PPSelectRequest.PosData}).");
 		return false;
 	}
 
