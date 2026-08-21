@@ -7,7 +7,7 @@ private bool                    m_HasNewRecipe = false;
 private int                     m_LastPPSelectIndex = -1;
 private DateTime                m_LastRecipeReceivedTime;
 
-public bool IsPPSelectMonitorRunning => (m_PPSelectMonitorTask != null && m_PPSelectMonitorTask.IsCompleted == false); //IsCompleted:true表示已不在執行狀態
+//public bool IsPPSelectMonitorRunning => (m_PPSelectMonitorTask != null && m_PPSelectMonitorTask.IsCompleted == false); //IsCompleted:true表示已不在執行狀態
 
 public void StartPPSelectMonitor()
 {
@@ -17,7 +17,7 @@ public void StartPPSelectMonitor()
 		return;
 	}
 
-	if (IsPPSelectMonitorRunning == true)
+	if (m_PPSelectMonitorTask != null && m_PPSelectMonitorTask.IsCompleted == false) //檢查Monitor是否在執行中
 	{
 		FVLog.Log("已處於監測 PP-Select 狀態中.");
 		return;
@@ -132,7 +132,7 @@ private bool TryGetPPSelectRequestFromCIM(out string targetRecipe)
 	// 外面再拿的時候 不確定會不會 race 加一下 視情況拿掉 
 	lock (m_PPSelectLock)
 	{
-		if (currentPPSelectIndex == m_LastPPSelectIndex)  //D4007  Event flag
+		if (currentPPSelectIndex == m_LastPPSelectIndex)  //D4007  Event flag，值沒變動代表沒更新
 		{
 			return false; // 直接下一輪了吧
 		}
@@ -158,8 +158,8 @@ private bool TryGetPPSelectRequestFromCIM(out string targetRecipe)
 		return false;
 	}
 
-	EQMEM_PPSelectRequest_Reply.BitValue = (EQMEM_PPSelectRequest_Reply.BitValue + 1) % 10000;
-	if (WriteDataToPLC(EQMEM_PPSelectRequest_Reply) == false)
+	EQMEM_PPSelectRequest_Reply.BitValue = (EQMEM_PPSelectRequest_Reply.BitValue + 1) % 10000; //0~FFFF
+    if (WriteDataToPLC(EQMEM_PPSelectRequest_Reply) == false)
 	{
 		FVLog.Log($"Error: Failed to write PPSelect Request Reply to PLC (D{EQMEM_PPSelectRequest_Reply.PosData}).");
 		return false;

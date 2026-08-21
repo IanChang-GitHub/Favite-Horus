@@ -1,4 +1,4 @@
-private bool m_IsShowDlgDone = true;
+﻿private bool m_IsShowDlgDone = true;
 public async void ShowDlg(bool _viewmode)
 {
     if(m_IsShowDlgDone == false)
@@ -96,7 +96,7 @@ public async void ShowDlg(bool _viewmode)
 
             progress.Report("Check if the Recipe is valid");
 
-            var found = recipeList.FirstOrDefault(item => item == recipeCIM);
+            var found = recipeList.FirstOrDefault(item => item == recipeCIM); //尋找第一個符合條件
             if (found == null)
             {
                 FVLog.Log("[TryGetCIMRecipe] 接收CIM發送不存在Recipe");
@@ -122,7 +122,7 @@ public async void ShowDlg(bool _viewmode)
     if(result.IsSuccess == true && result.Value == true)
     {
         GetViewModel().ActiveRecipe = recipeCIM;
-        GetViewModel().IsRcpComboBoxEnabled = false;
+        GetViewModel().IsRcpComboBoxEnabled = false; //鎖定ComboBox
 
         FVLog.Log($"[TryGetCIMRecipe] PP-Select Request 成功，設定Recipe{recipeCIM}");
     }
