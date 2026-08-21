@@ -7,7 +7,7 @@ private bool                    m_HasNewRecipe = false;
 private int                     m_LastPPSelectIndex = -1;
 private DateTime                m_LastRecipeReceivedTime;
 
-public bool IsPPSelectMonitorRunning => (m_PPSelectMonitorTask != null && m_PPSelectMonitorTask.IsCompleted == false);
+public bool IsPPSelectMonitorRunning => (m_PPSelectMonitorTask != null && m_PPSelectMonitorTask.IsCompleted == false); //IsCompleted:true表示已不在執行狀態
 
 public void StartPPSelectMonitor()
 {
@@ -132,7 +132,7 @@ private bool TryGetPPSelectRequestFromCIM(out string targetRecipe)
 	// 外面再拿的時候 不確定會不會 race 加一下 視情況拿掉 
 	lock (m_PPSelectLock)
 	{
-		if (currentPPSelectIndex == m_LastPPSelectIndex) 
+		if (currentPPSelectIndex == m_LastPPSelectIndex)  //D4007  Event flag
 		{
 			return false; // 直接下一輪了吧
 		}
